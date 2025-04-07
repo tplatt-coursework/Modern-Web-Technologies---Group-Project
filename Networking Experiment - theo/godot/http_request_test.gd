@@ -16,11 +16,6 @@ func _http_request_completed(result, response_code, headers, body):
 	var json = JSON.new()
 	json.parse(body.get_string_from_utf8())
 	var response = json.get_data()
-	var nesting = {
-		"foo":"bar",
-		"baz":{"qud":"qux"}
-	}
-	print("blep: "+str(nesting))
 	
 	# Will print the user agent string used by the HTTPRequest node (as recognized by httpbin.org).
 	print("Response from server:")
@@ -61,4 +56,4 @@ func _on_post_button_pressed():
 	http_post("/POST", {"foo":"bar"})
 
 func _on_get_button_pressed():
-	http_post("/GET","")
+	http_get("/GET","")
