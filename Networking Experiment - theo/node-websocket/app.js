@@ -19,7 +19,7 @@ const server = net.createServer(socket => {
       console.error(e)
 
       let boffer = {
-        code:400,
+        code:500,
         response:"Internal Server Error", 
       }
 
