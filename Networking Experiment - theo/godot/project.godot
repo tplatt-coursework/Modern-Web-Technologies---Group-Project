@@ -11,6 +11,6 @@ config_version=5
 [application]
 
 config/name="Godot-Node-Connection-Experiment"
-run/main_scene="res://node_2d.tscn"
+run/main_scene="res://Websocket_Connection_Test.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
