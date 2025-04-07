@@ -32,7 +32,7 @@ func tcp_receive(bytes):
 			var response = data[1].get_string_from_utf8()
 			var json = JSON.parse_string(response)
 			print("Websocket Data Received")
-			print("  Code:     "+str(json["code"])+" "+HTTP_CODE[200])
+			print("  Code:     "+str(json["code"])+" "+HTTP_CODE[int(json["code"])])
 			print("  Response: "+str(json["response"]))
 			print()
 
@@ -100,12 +100,12 @@ func _on_timer_timeout() -> void:
 
 
 func _on_button_2_pressed() -> void:
-	print("Button Pressed: FOO")
+	print("Button Pressed: Trigger Internal Server Error")
 	tcp_send("foobar")
 
 func _on_button_pressed() -> void:
 	
-	print("Button Pressed: BAR")
+	print("Button Pressed: Send and receive data")
 	tcp_send({"Foo":{"bar":42}})
 
 # Note: This test is run on Godot 4.3
