@@ -1,3 +1,112 @@
-[gd_scene format=3 uid="uid://xiv5dfompkqr"]
+[gd_scene load_steps=6 format=3 uid="uid://xiv5dfompkqr"]
 
-[node name="GameBox" type="Node"]
+[ext_resource type="Texture2D" uid="uid://bvvn02e7mmeuv" path="res://icon.svg" id="1_qq4s2"]
+[ext_resource type="Script" path="res://player.gd" id="2_661r0"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_av0lk"]
+texture = ExtResource("1_qq4s2")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:0/0 = 0
+1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+2:0/0 = 0
+2:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+3:0/0 = 0
+3:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+4:0/0 = 0
+4:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+5:0/0 = 0
+5:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+6:0/0 = 0
+6:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+7:0/0 = 0
+7:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+4:2/0 = 0
+5:2/0 = 0
+6:2/0 = 0
+7:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+4:3/0 = 0
+5:3/0 = 0
+6:3/0 = 0
+7:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+5:4/0 = 0
+6:4/0 = 0
+7:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+3:5/0 = 0
+4:5/0 = 0
+5:5/0 = 0
+6:5/0 = 0
+7:5/0 = 0
+0:6/0 = 0
+1:6/0 = 0
+2:6/0 = 0
+3:6/0 = 0
+4:6/0 = 0
+5:6/0 = 0
+6:6/0 = 0
+7:6/0 = 0
+0:7/0 = 0
+1:7/0 = 0
+2:7/0 = 0
+3:7/0 = 0
+4:7/0 = 0
+5:7/0 = 0
+6:7/0 = 0
+7:7/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_g4gde"]
+physics_layer_0/collision_layer = 15
+sources/0 = SubResource("TileSetAtlasSource_av0lk")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gx5gi"]
+size = Vector2(53, 50.5)
+
+[node name="GameBox" type="Node2D"]
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = SubResource("TileSet_g4gde")
+format = 2
+layer_0/tile_data = PackedInt32Array(2359296, 65536, 0, 2359297, 131072, 0, 2359298, 65536, 0, 2359299, 131072, 0, 2424836, 65536, 0, 2424837, 131072, 0, 2424838, 65536, 0, 2424839, 131072, 0, 2359304, 65536, 0, 2359305, 131072, 0, 2293770, 65536, 0, 2293771, 131072, 0, 2293774, 65536, 0, 2293775, 131072, 0, 2359312, 65536, 0, 2359313, 131072, 0, 1835021, 65536, 0, 1835022, 131072, 0, 1966090, 65536, 0, 2031623, 65536, 0, 2031624, 131072, 0, 2359314, 65536, 0, 2359315, 131072, 0, 2359316, 65536, 0, 2359317, 131072, 0, 2293780, 65536, 0, 2293781, 131072, 0, 2228244, 65536, 0, 2228245, 131072, 0, 2228246, 65536, 0, 2228247, 131072, 0, 2228248, 65536, 0, 2228249, 131072, 0, 2162709, 65536, 0, 2162710, 131072, 0, 2228251, 65536, 0, 2228252, 131072, 0, 2162714, 65536, 0, 2162715, 131072, 0, 2293784, 65536, 0, 2293785, 131072, 0, 2293789, 65536, 0, 2293790, 131072, 0, 2162721, 65536, 0, 2162722, 131072, 0, 2031651, 131072, 0, 2097186, 131072, 0, 2162720, 131072, 0, 2228255, 65536, 0, 2228256, 131072, 0, 1703973, 65536, 0, 1703974, 131072, 0, 1900555, 65536, 0, 1900556, 131072, 0, 0, 65536, 0, 1, 65536, 0, 2, 65536, 0, 3, 131072, 0, 4, 131072, 0, 65541, 131072, 0, 65542, 131072, 0, 65543, 131072, 0, 7, 131072, 0, 8, 131072, 0, 9, 65536, 0, 6, 65536, 0, -524281, 65536, 0, -524280, 65536, 0, -589815, 131072, 0, -655348, 131072, 0, -655347, 65536, 0, -655346, 131072, 0, -720879, 65536, 0, -720878, 65536, 0, -720877, 131072, 0, -196594, 65536, 0, -131057, 65536, 0, -131056, 65536, 0, -131055, 131072, 0, -131054, 65536, 0, -65518, 131072, 0, -65517, 131072, 0, -65516, 131072, 0, -131052, 131072, 0, -131051, 65536, 0, -131050, 131072, 0, -196586, 65536, 0, -262121, 65536, 0, -262120, 131072, 0, -262119, 65536, 0, -327654, 65536, 0, -393189, 131072, 0, -393188, 131072, 0, -65526, 65536, 0, -131061, 65536, 0, -131060, 65536, 0, -196595, 65536, 0, -327676, 65536, 0, -327675, 65536, 0)
+
+[node name="player" type="CharacterBody2D" parent="."]
+script = ExtResource("2_661r0")
+
+[node name="Camera2D" type="Camera2D" parent="player"]
+
+[node name="lookandmove" type="Node2D" parent="player"]
+
+[node name="Sprite2D" type="Sprite2D" parent="player/lookandmove"]
+position = Vector2(27, -27)
+scale = Vector2(0.421875, 0.390625)
+texture = ExtResource("1_qq4s2")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="player/lookandmove"]
+root_node = NodePath("../..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="player"]
+position = Vector2(27.5, -26.75)
+shape = SubResource("RectangleShape2D_gx5gi")
