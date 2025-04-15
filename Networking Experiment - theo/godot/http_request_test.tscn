@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://bd25rr4rdes3h"]
+
+[ext_resource type="Script" path="res://http_request_test.gd" id="1_djyxj"]
+
+[node name="HTTP_Request_Test" type="Node"]
+script = ExtResource("1_djyxj")
+
+[node name="GET_Button" type="Button" parent="."]
+offset_left = 225.0
+offset_top = 349.0
+offset_right = 511.0
+offset_bottom = 570.0
+text = "Send GET Request"
+
+[node name="POST_Button" type="Button" parent="."]
+offset_left = 708.0
+offset_top = 394.0
+offset_right = 1027.0
+offset_bottom = 571.0
+text = "Send POST Request
+data payload: {\"foo\":\"bar\"}"
+
+[connection signal="pressed" from="GET_Button" to="." method="_on_get_button_pressed"]
+[connection signal="pressed" from="POST_Button" to="." method="_on_post_button_pressed"]
