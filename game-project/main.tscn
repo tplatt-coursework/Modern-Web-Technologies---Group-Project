@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3 uid="uid://dvaq47use4sqh"]
+
+[ext_resource type="PackedScene" uid="uid://srhaevr685ec" path="res://code_box.tscn" id="1_7u6uk"]
+[ext_resource type="PackedScene" uid="uid://xiv5dfompkqr" path="res://game_box.tscn" id="2_jc0vt"]
+[ext_resource type="PackedScene" uid="uid://b8ommbext8jju" path="res://networking_node.tscn" id="3_awc6a"]
+
+[node name="Main" type="Node2D"]
+
+[node name="CodeBox" parent="." instance=ExtResource("1_7u6uk")]
+
+[node name="GameBox" parent="." instance=ExtResource("2_jc0vt")]
+
+[node name="NetworkingNode" parent="." instance=ExtResource("3_awc6a")]
