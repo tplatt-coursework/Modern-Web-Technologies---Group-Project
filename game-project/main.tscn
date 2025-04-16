@@ -7,6 +7,10 @@
 [node name="Main" type="Node2D"]
 
 [node name="CodeBox" parent="." instance=ExtResource("1_7u6uk")]
+offset_left = -581.0
+offset_top = 327.0
+offset_right = -581.0
+offset_bottom = 327.0
 
 [node name="GameBox" parent="." instance=ExtResource("2_jc0vt")]
 
