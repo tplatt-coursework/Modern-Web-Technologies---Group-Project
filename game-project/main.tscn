@@ -4,14 +4,37 @@
 [ext_resource type="PackedScene" uid="uid://xiv5dfompkqr" path="res://game_box.tscn" id="2_jc0vt"]
 [ext_resource type="PackedScene" uid="uid://b8ommbext8jju" path="res://networking_node.tscn" id="3_awc6a"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 13.0
+offset_bottom = 6.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="CodeBox" parent="." instance=ExtResource("1_7u6uk")]
-offset_left = -581.0
-offset_top = 327.0
-offset_right = -581.0
-offset_bottom = 327.0
-
-[node name="GameBox" parent="." instance=ExtResource("2_jc0vt")]
+layout_mode = 2
+offset_left = -7.0
+offset_top = 651.0
+offset_right = 1113.0
+offset_bottom = 1104.0
 
 [node name="NetworkingNode" parent="." instance=ExtResource("3_awc6a")]
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 512.0
+offset_bottom = 512.0
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="SubViewport" type="SubViewport" parent="HBoxContainer/SubViewportContainer"]
+handle_input_locally = false
+size = Vector2i(800, 800)
+render_target_update_mode = 4
+
+[node name="GameBox" parent="HBoxContainer/SubViewportContainer/SubViewport" instance=ExtResource("2_jc0vt")]
+position = Vector2(-3, 646)

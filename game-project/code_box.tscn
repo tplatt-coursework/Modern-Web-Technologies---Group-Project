@@ -12,6 +12,7 @@ anchors_preset = 0
 script = ExtResource("1_ihe8n")
 
 [node name="CodeEdit" type="CodeEdit" parent="."]
+layout_mode = 0
 offset_left = 824.0
 offset_top = -648.0
 offset_right = 1157.0
@@ -20,6 +21,7 @@ theme_override_colors/background_color = Color(0.0588235, 0.215686, 0.266667, 1)
 placeholder_text = "Type code here..."
 
 [node name="RunButton" type="Button" parent="."]
+layout_mode = 0
 offset_left = 824.0
 offset_top = -64.0
 offset_right = 1155.0
