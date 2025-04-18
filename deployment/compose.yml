@@ -12,10 +12,6 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile.node
-    depends_on:
-      mongo:
-        condition: service_healthy
-        restart: true
 
     
 

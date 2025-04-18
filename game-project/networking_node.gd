@@ -4,7 +4,7 @@ signal NET_CodeBox(x)
 signal NET_Run
 
 #const WS_ADDR = "ws://127.0.0.1:3500/"
-const WS_ADDR = "ws://node:3500/"
+const WS_ADDR = "ws://node/"
 var socket = WebSocketPeer.new()
 var clientID = null
 var reconnect_attempts = 3
