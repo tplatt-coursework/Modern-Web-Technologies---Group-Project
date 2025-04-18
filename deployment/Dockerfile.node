@@ -1,0 +1,13 @@
+FROM node:22-alpine
+ENV NODE_ENV=development
+WORKDIR /usr/src/app/nodejs
+
+#copy over package.json and install necessary packages
+COPY ./package.json /usr/src/app/nodejs/
+RUN npm install
+
+#copy over the rest of the code into the container
+COPY . /usr/src/app/nodejs/
+
+#start our node
+CMD ["node", "index.js"]
