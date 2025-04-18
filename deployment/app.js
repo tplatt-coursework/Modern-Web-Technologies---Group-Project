@@ -25,7 +25,7 @@ getUniqueID = function () {
     return s4() + s4() + '-' + s4();
 };
 const clients = {}
-app.ws('/',(ws,req)=>{
+app.ws('/ws',(ws,req)=>{
     
 
     // console.log("FooBar")
