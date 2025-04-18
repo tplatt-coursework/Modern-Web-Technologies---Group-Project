@@ -1,3 +1,21 @@
-[gd_scene format=3 uid="uid://b8ommbext8jju"]
+[gd_scene load_steps=2 format=3 uid="uid://b8ommbext8jju"]
+
+[ext_resource type="Script" path="res://networking_node.gd" id="1_rubcw"]
 
 [node name="NetworkingNode" type="Node"]
+script = ExtResource("1_rubcw")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Connection To Server:"
+
+[node name="Connection_Status" type="Label" parent="."]
+offset_left = 173.0
+offset_right = 403.0
+offset_bottom = 23.0
+text = "foobar"
+
+[node name="ReconnectTimer" type="Timer" parent="."]
+
+[connection signal="timeout" from="ReconnectTimer" to="." method="_on_reconnect_timer_timeout"]

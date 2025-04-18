@@ -33,4 +33,12 @@ text = "Run Code"
 icon = ExtResource("2_6fk8e")
 expand_icon = true
 
+[node name="Parse_Clock" type="Timer" parent="."]
+wait_time = 0.25
+
+[node name="Network_Timer" type="Timer" parent="."]
+wait_time = 2.5
+
 [connection signal="pressed" from="RunButton" to="." method="_on_run_button_pressed"]
+[connection signal="timeout" from="Parse_Clock" to="." method="_on_parse_clock_timeout"]
+[connection signal="timeout" from="Network_Timer" to="." method="_on_network_timer_timeout"]

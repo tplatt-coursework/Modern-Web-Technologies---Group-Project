@@ -1,5 +1,5 @@
 {
-  "name": "node",
+  "name": "websocket",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
@@ -9,7 +9,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "express": "^5.1.0",
-    "socket.io": "^4.8.1"
+    "ws": "^8.18.1"
   }
 }
