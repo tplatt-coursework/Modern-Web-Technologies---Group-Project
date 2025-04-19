@@ -4,8 +4,8 @@ extends CharacterBody2D
 
 #for space jump
 #const SPEED = 300.0
-const JUMP_VELOCITY = 500
-const MOVE_VELOCITY = 200
+const JUMP_VELOCITY = 800
+const MOVE_VELOCITY = 500
 const MAX_MOVE_VELOCITY = 500
 const MAX_JUMP_VELOCITY = 800
 #
@@ -36,22 +36,22 @@ func _physics_process(delta: float) -> void:
 
 # Naming convention: PC_ for Player Controller
 func PC_left(x):
-	if x == -1:
-		velocity.x = MOVE_VELOCITY
+	if x < 0:
+		velocity.x = -MOVE_VELOCITY
 	else: 
-		velocity.x = min(x,MAX_JUMP_VELOCITY)
+		velocity.x = -min(x,MAX_MOVE_VELOCITY)
 	print("main/GameBox/Player: Moved Left, v="+str(velocity.x))
 
 func PC_right(x):
-	if x == -1:
-		velocity.x = -MOVE_VELOCITY
+	if x < 0:
+		velocity.x = MOVE_VELOCITY
 	else: 
-		velocity.x = -min(x,MAX_JUMP_VELOCITY)
+		velocity.x = min(x,MAX_MOVE_VELOCITY)
 	print("main/GameBox/Player: Moved Right, v="+str(velocity.x))
 
 func PC_jump(x):
 	if is_on_floor():
-		if x == -1:
+		if x < 0:
 			velocity.y = -JUMP_VELOCITY
 		else: 
 			velocity.y = -min(x,MAX_JUMP_VELOCITY)
