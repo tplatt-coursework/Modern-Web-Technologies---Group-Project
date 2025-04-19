@@ -37,16 +37,16 @@ func _physics_process(delta: float) -> void:
 # Naming convention: PC_ for Player Controller
 func PC_left(x):
 	if x == -1:
-		velocity.x = MOVE_VELOCITY
+		velocity.x = -MOVE_VELOCITY
 	else: 
-		velocity.x = min(x,MAX_JUMP_VELOCITY)
+		velocity.x = -min(x,MAX_JUMP_VELOCITY)
 	print("main/GameBox/Player: Moved Left, v="+str(velocity.x))
 
 func PC_right(x):
 	if x == -1:
-		velocity.x = -MOVE_VELOCITY
+		velocity.x = MOVE_VELOCITY
 	else: 
-		velocity.x = -min(x,MAX_JUMP_VELOCITY)
+		velocity.x = min(x,MAX_JUMP_VELOCITY)
 	print("main/GameBox/Player: Moved Right, v="+str(velocity.x))
 
 func PC_jump(x):
