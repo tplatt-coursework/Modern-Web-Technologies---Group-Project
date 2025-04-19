@@ -3,8 +3,8 @@ extends Node
 signal NET_CodeBox(x)
 signal NET_Run
 
-const WS_ADDR = "ws://127.0.0.1:3500/"
-#const WS_ADDR = "ws://tplatt@cs382.net"
+const WS_ADDR = "ws://127.0.0.1:3500/ws"
+#const WS_ADDR = "wss://tplatt.cs382.net/ws"
 var socket = WebSocketPeer.new()
 var clientID = null
 var reconnect_attempts = 3
@@ -67,7 +67,7 @@ func send_codebox(message):
 		"note":"CodeBox Update",
 		"content":str(message)
 	}
-	socket.send_text(payload)
+	socket.send_text(JSON.stringify(payload))
 
 
 
