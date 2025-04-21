@@ -1,0 +1,54 @@
+[gd_scene load_steps=4 format=3 uid="uid://bs5dnasrxclwr"]
+
+[ext_resource type="Script" path="res://menu.gd" id="1_q517e"]
+[ext_resource type="AudioStream" uid="uid://dedyjltoxsjbm" path="res://menu/MenuMusic.mp3" id="3_v2kav"]
+[ext_resource type="Texture2D" uid="uid://bwroiyod0d0gp" path="res://menu/451f8f19-76e6-4b9a-a094-09f4b0c07cf5 (1).png" id="3_ymxmf"]
+
+[node name="Menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 65.0
+offset_top = 28.0
+offset_right = 65.0
+offset_bottom = 28.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_q517e")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.036
+offset_left = 416.0
+offset_top = 401.0
+offset_right = 548.528
+offset_bottom = 562.0
+scale = Vector2(1, 2.56)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Play" type="Button" parent="MarginContainer/VBoxContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+text = "Play"
+
+[node name="Quit" type="Button" parent="MarginContainer/VBoxContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+text = "Quit"
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_v2kav")
+volume_db = -0.987
+autoplay = true
+
+[node name="451f8f19-76e6-4b9a-a094-09f4b0c07Cf5(1)" type="Sprite2D" parent="."]
+position = Vector2(515.75, 293.5)
+scale = Vector2(0.623846, 0.629883)
+texture = ExtResource("3_ymxmf")
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Quit" to="." method="_on_quit_pressed"]
