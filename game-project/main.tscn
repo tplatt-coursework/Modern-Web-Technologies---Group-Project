@@ -35,7 +35,7 @@ layout_mode = 2
 
 [node name="SubViewport" type="SubViewport" parent="HBoxContainer/SubViewportContainer"]
 handle_input_locally = false
-size = Vector2i(800, 800)
+size = Vector2i(817, 800)
 render_target_update_mode = 4
 
 [node name="GameBox" parent="HBoxContainer/SubViewportContainer/SubViewport" instance=ExtResource("2_jc0vt")]

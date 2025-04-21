@@ -46,8 +46,8 @@ volume_db = -0.987
 autoplay = true
 
 [node name="451f8f19-76e6-4b9a-a094-09f4b0c07Cf5(1)" type="Sprite2D" parent="."]
-position = Vector2(515.75, 293.5)
-scale = Vector2(0.623846, 0.629883)
+position = Vector2(511.5, 296.5)
+scale = Vector2(0.628463, 0.633789)
 texture = ExtResource("3_ymxmf")
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Play" to="." method="_on_play_pressed"]
