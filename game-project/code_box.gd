@@ -8,6 +8,7 @@ signal NS_CodeBox()
 signal UC_left(x)
 signal UC_right(x)
 signal UC_jump(x)
+signal UC_reset()
 
 var player: Node = null
 var user_code
@@ -16,6 +17,7 @@ var R_LEFT = RegEx.new()
 var R_RIGHT = RegEx.new()
 var R_JUMP = RegEx.new()
 var R_INT = RegEx.new()
+var R_RESET = RegEx.new()
 
 #just to find the player node....
 func _recursive_find_node(node: Node, target_name: String) -> Node:
@@ -33,6 +35,7 @@ func _ready():
 	R_RIGHT.compile("move_right([0-9]*)")
 	R_JUMP.compile("jump([0-9]*)")
 	R_INT.compile("[0-9]+")
+	R_RESET.compile("reset()")
 	
 	#var root = get_tree().get_root()
 	#var gamebox = _recursive_find_node(root, "GameBox")
@@ -80,6 +83,9 @@ func _parse_and_execute(line: String):
 		var param = get_parameter(line)
 		print("main/CodeBox: emitting UC_jump("+str(param)+")")
 		UC_jump.emit(param)
+		
+	elif R_RESET.search(line):
+		UC_reset.emit()
 		
 
 func _on_network_timer_timeout() -> void:

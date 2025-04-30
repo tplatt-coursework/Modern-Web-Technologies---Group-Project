@@ -58,3 +58,6 @@ func PC_jump(x):
 		print("main/GameBox/Player: Jumped, v="+str(velocity.y))
 	else:
 		print("main/GameBox/Player: Jumped while in air")
+		
+func PC_reset():
+	velocity = Vector2.ZERO

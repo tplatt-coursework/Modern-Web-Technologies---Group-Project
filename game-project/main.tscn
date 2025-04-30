@@ -10,8 +10,6 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 13.0
-offset_bottom = 6.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_spvti")
@@ -52,5 +50,6 @@ text = "n/a"
 [connection signal="NS_run" from="CanvasLayer/CodeBox" to="." method="_on_code_box_ns_run"]
 [connection signal="UC_jump" from="CanvasLayer/CodeBox" to="." method="_on_code_box_uc_jump"]
 [connection signal="UC_left" from="CanvasLayer/CodeBox" to="." method="_on_code_box_uc_left"]
+[connection signal="UC_reset" from="CanvasLayer/CodeBox" to="." method="_on_code_box_uc_reset"]
 [connection signal="UC_right" from="CanvasLayer/CodeBox" to="." method="_on_code_box_uc_right"]
 [connection signal="toggled" from="CanvasLayer/CheckButton" to="." method="_on_check_button_toggled"]

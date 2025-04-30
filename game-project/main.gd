@@ -15,6 +15,7 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	$CanvasLayer/NetworkData.text = $NetworkingNode/Connection_Status.text
 	pass
 
 
@@ -41,6 +42,11 @@ func _on_code_box_ns_code_box(x) -> void:
 
 func _on_networking_node_net_run() -> void:
 	$CanvasLayer/CodeBox.run()
+
+
+func _on_code_box_uc_reset() -> void:
+	$GameBox/player.position = $GameBox/Spawnpoint.position
+	$GameBox/player.PC_reset()
 
 
 func _on_networking_node_net_code_box(x: Variant) -> void:
