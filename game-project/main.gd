@@ -70,3 +70,10 @@ func _on_check_button_toggled(toggled_on: bool) -> void:
 		$GameBox/NavMap.visible = false
 	else: 
 		$GameBox/NavMap.visible = true
+
+
+func _on_code_box_uc_syntax_error(pc, x, clear):
+	if !clear:
+		$CanvasLayer/ErrorOutput.text = "Syntax Error on line "+str(pc+1)+": "+str(x)
+	else: 
+		$CanvasLayer/ErrorOutput.text = ""

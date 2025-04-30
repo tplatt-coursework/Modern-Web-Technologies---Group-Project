@@ -9,6 +9,7 @@ signal UC_left(x)
 signal UC_right(x)
 signal UC_jump(x)
 signal UC_reset()
+signal UC_syntax_error(pc,x)
 
 var player: Node = null
 var user_code
@@ -16,7 +17,10 @@ var PROGRAM_COUNTER
 var R_LEFT = RegEx.new()
 var R_RIGHT = RegEx.new()
 var R_JUMP = RegEx.new()
+var R_RJUMP = RegEx.new()
+var R_LJUMP = RegEx.new()
 var R_INT = RegEx.new()
+var R_WAIT = RegEx.new()
 var R_RESET = RegEx.new()
 
 #just to find the player node....
@@ -31,11 +35,14 @@ func _recursive_find_node(node: Node, target_name: String) -> Node:
 
 func _ready():
 	user_code = PackedStringArray()
-	R_LEFT.compile("move_left([0-9]*)")
-	R_RIGHT.compile("move_right([0-9]*)")
-	R_JUMP.compile("jump([0-9]*)")
+	R_LEFT.compile("\\bmove_left\\([0-9]*\\)")
+	R_RIGHT.compile("\\bmove_right\\([0-9]*\\)")
+	R_RJUMP.compile("\\bjump_right\\([0-9]*\\)")
+	R_LJUMP.compile("\\bjump_left\\([0-9]*\\)")
+	R_JUMP.compile("\\bjump\\([0-9]*\\)")
 	R_INT.compile("[0-9]+")
-	R_RESET.compile("reset()")
+	R_RESET.compile("\\breset\\(\\)")
+	R_WAIT.compile("\\bwait\\([0-9]*\\)")
 	
 	#var root = get_tree().get_root()
 	#var gamebox = _recursive_find_node(root, "GameBox")
@@ -43,6 +50,7 @@ func _ready():
 		#player = gamebox.get_node_or_null("player")
 
 func _on_run_button_pressed() -> void:
+	UC_syntax_error.emit(0,"",true)
 	NS_CodeBox.emit($CodeEdit.text)
 	NS_run.emit()
 	run()
@@ -79,37 +87,40 @@ func _parse_and_execute(line: String):
 		print("main/CodeBox: emitting UC_right("+str(param)+")")
 		UC_right.emit(param)
 	
+	elif R_RJUMP.search(line):
+		var param = get_parameter(line)
+		print("main/CodeBox: emitting UC_jump("+str(param)+")")
+		print("main/CodeBox: emitting UC_right("+str(param)+")")
+		UC_jump.emit(param)
+		UC_right.emit(param)
+		
+	elif R_LJUMP.search(line):
+		var param = get_parameter(line)
+		print("main/CodeBox: emitting UC_jump("+str(param)+")")
+		print("main/CodeBox: emitting UC_left("+str(param)+")")
+		UC_jump.emit(param)
+		UC_left.emit(param)
+	
 	elif R_JUMP.search(line):
 		var param = get_parameter(line)
 		print("main/CodeBox: emitting UC_jump("+str(param)+")")
 		UC_jump.emit(param)
-		
+
 	elif R_RESET.search(line):
 		UC_reset.emit()
-		
+	
+	elif R_WAIT.search(line):
+		$Parse_Clock.stop()
+		var param = get_parameter(line)
+		if param == null: param = 1
+		await get_tree().create_timer(param).timeout
+		$Parse_Clock.start()
+	
+	else: 
+		$Parse_Clock.stop()
+		print("main/CodeBox: Syntax Error on line "+str(PROGRAM_COUNTER+1)+": "+str(line))
+		UC_syntax_error.emit(PROGRAM_COUNTER,line,false)
+
 
 func _on_network_timer_timeout() -> void:
 	NS_CodeBox.emit($CodeEdit.text)
-
-
-
-	
-	#match line:
-		#"jump()":
-			#print("main/CodeBox: emitting UC_jump")
-			#UC_jump.emit()
-			###tried with player jump	
-			##if player:
-				##player.jump()
-			#
-		#"move_left()":
-			#print("main/CodeBox: emitting UC_left")
-			#UC_left.emit()
-			#
-		#"move_right()":
-			#print("main/CodeBox: emitting UC_right")
-			#UC_right.emit()
-			#
-			#
-		#_:
-			#print("main/CodeBox: Error: unknown command ", line)

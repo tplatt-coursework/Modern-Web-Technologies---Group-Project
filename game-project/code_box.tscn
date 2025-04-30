@@ -16,7 +16,21 @@ layout_mode = 0
 offset_right = 335.0
 offset_bottom = 591.0
 theme_override_colors/background_color = Color(0.0588235, 0.215686, 0.266667, 1)
-placeholder_text = "Type code here..."
+placeholder_text = "Type code here...
+
+Allowed Commands:
+move_left(n)
+move_right(n)
+jump_left(n)
+jump_right(n)
+jump(n)
+wait(n)
+reset()
+
+where n = any int from 0-10
+or n is empty.
+
+Only type one command per line."
 
 [node name="RunButton" type="Button" parent="."]
 layout_mode = 0

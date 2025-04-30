@@ -44,6 +44,12 @@ offset_right = 227.0
 offset_bottom = 48.0
 text = "n/a"
 
+[node name="ErrorOutput" type="Label" parent="CanvasLayer"]
+offset_left = 7.0
+offset_top = 47.0
+offset_right = 62.0
+offset_bottom = 70.0
+
 [connection signal="NET_CodeBox" from="NetworkingNode" to="." method="_on_networking_node_net_code_box"]
 [connection signal="NET_Run" from="NetworkingNode" to="." method="_on_networking_node_net_run"]
 [connection signal="NS_CodeBox" from="CanvasLayer/CodeBox" to="." method="_on_code_box_ns_code_box"]
@@ -52,4 +58,5 @@ text = "n/a"
 [connection signal="UC_left" from="CanvasLayer/CodeBox" to="." method="_on_code_box_uc_left"]
 [connection signal="UC_reset" from="CanvasLayer/CodeBox" to="." method="_on_code_box_uc_reset"]
 [connection signal="UC_right" from="CanvasLayer/CodeBox" to="." method="_on_code_box_uc_right"]
+[connection signal="UC_syntax_error" from="CanvasLayer/CodeBox" to="." method="_on_code_box_uc_syntax_error"]
 [connection signal="toggled" from="CanvasLayer/CheckButton" to="." method="_on_check_button_toggled"]
