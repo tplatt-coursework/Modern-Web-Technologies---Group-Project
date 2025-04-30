@@ -6,11 +6,13 @@
 script = ExtResource("1_rubcw")
 
 [node name="Label" type="Label" parent="."]
+visible = false
 offset_right = 40.0
 offset_bottom = 23.0
 text = "Connection To Server:"
 
 [node name="Connection_Status" type="Label" parent="."]
+visible = false
 offset_left = 173.0
 offset_right = 403.0
 offset_bottom = 23.0

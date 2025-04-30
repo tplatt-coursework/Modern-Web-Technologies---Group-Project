@@ -67,17 +67,17 @@ func get_parameter(line):
 
 func _parse_and_execute(line: String):
 	if R_LEFT.search(line):
-		var param = get_parameter(line) *10
+		var param = get_parameter(line)
 		print("main/CodeBox: emitting UC_left("+str(param)+")")
 		UC_left.emit(param)
 		
 	elif R_RIGHT.search(line):
-		var param = get_parameter(line) *10
+		var param = get_parameter(line)
 		print("main/CodeBox: emitting UC_right("+str(param)+")")
 		UC_right.emit(param)
 	
 	elif R_JUMP.search(line):
-		var param = get_parameter(line) *10
+		var param = get_parameter(line)
 		print("main/CodeBox: emitting UC_jump("+str(param)+")")
 		UC_jump.emit(param)
 		

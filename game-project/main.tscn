@@ -16,43 +16,41 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_spvti")
 
-[node name="CodeBox" parent="." instance=ExtResource("1_7u6uk")]
-layout_mode = 2
-offset_left = -7.0
-offset_top = 651.0
-offset_right = 1113.0
-offset_bottom = 1104.0
-
 [node name="NetworkingNode" parent="." instance=ExtResource("3_awc6a")]
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
-layout_mode = 0
-offset_right = 512.0
-offset_bottom = 512.0
+[node name="GameBox" parent="." instance=ExtResource("2_jc0vt")]
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="HBoxContainer"]
-layout_mode = 2
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="SubViewport" type="SubViewport" parent="HBoxContainer/SubViewportContainer"]
-handle_input_locally = false
-size = Vector2i(817, 800)
-render_target_update_mode = 4
+[node name="CodeBox" parent="CanvasLayer" instance=ExtResource("1_7u6uk")]
+offset_left = 817.0
+offset_right = 1152.0
+offset_bottom = 647.0
 
-[node name="GameBox" parent="HBoxContainer/SubViewportContainer/SubViewport" instance=ExtResource("2_jc0vt")]
-position = Vector2(-3, 646)
-
-[node name="CheckButton" type="CheckButton" parent="."]
-layout_mode = 0
-offset_top = 25.0
-offset_right = 179.0
-offset_bottom = 56.0
+[node name="CheckButton" type="CheckButton" parent="CanvasLayer"]
+offset_right = 228.0
+offset_bottom = 31.0
 text = "Only driver enable this:"
 
-[connection signal="NS_CodeBox" from="CodeBox" to="." method="_on_code_box_ns_code_box"]
-[connection signal="NS_run" from="CodeBox" to="." method="_on_code_box_ns_run"]
-[connection signal="UC_jump" from="CodeBox" to="." method="_on_code_box_uc_jump"]
-[connection signal="UC_left" from="CodeBox" to="." method="_on_code_box_uc_left"]
-[connection signal="UC_right" from="CodeBox" to="." method="_on_code_box_uc_right"]
+[node name="NetworkInfo" type="Label" parent="CanvasLayer"]
+offset_left = 7.0
+offset_top = 25.0
+offset_right = 175.0
+offset_bottom = 48.0
+text = "Network Connection: "
+
+[node name="NetworkData" type="Label" parent="CanvasLayer"]
+offset_left = 175.0
+offset_top = 25.0
+offset_right = 227.0
+offset_bottom = 48.0
+text = "n/a"
+
 [connection signal="NET_CodeBox" from="NetworkingNode" to="." method="_on_networking_node_net_code_box"]
 [connection signal="NET_Run" from="NetworkingNode" to="." method="_on_networking_node_net_run"]
-[connection signal="toggled" from="CheckButton" to="." method="_on_check_button_toggled"]
+[connection signal="NS_CodeBox" from="CanvasLayer/CodeBox" to="." method="_on_code_box_ns_code_box"]
+[connection signal="NS_run" from="CanvasLayer/CodeBox" to="." method="_on_code_box_ns_run"]
+[connection signal="UC_jump" from="CanvasLayer/CodeBox" to="." method="_on_code_box_uc_jump"]
+[connection signal="UC_left" from="CanvasLayer/CodeBox" to="." method="_on_code_box_uc_left"]
+[connection signal="UC_right" from="CanvasLayer/CodeBox" to="." method="_on_code_box_uc_right"]
+[connection signal="toggled" from="CanvasLayer/CheckButton" to="." method="_on_check_button_toggled"]
