@@ -1,6 +1,8 @@
 extends CharacterBody2D
+@onready var anim: AnimatedSprite2D = $lookandmove/AnimatedSprite2D
 
-
+# Track facing direction: 1 = right, -1 = left
+var facing_direction: int = 1
 
 #for space jump
 #const SPEED = 300.0
@@ -19,6 +21,10 @@ func _physics_process(delta: float) -> void:
 		if abs(velocity.x) < 1:
 			velocity.x = 0
 
+	# Idle when stopped and on floor, oriented by facing_direction
+	if is_on_floor() and velocity.x == 0:
+		anim.play("idle")
+		
 	# Handle jump.
 	#if Input.is_action_just_pressed("up") and is_on_floor():
 		#velocity.y = JUMP_VELOCITY
@@ -40,6 +46,7 @@ func PC_left(x):
 		velocity.x = -sqrt(2*500*(MOVE_DISTANCE))
 	else: 
 		velocity.x = -min(sqrt(2*500*(x*MOVE_DISTANCE)),sqrt(2*500*(MAX_MOVE_MULTIPLIER*MOVE_DISTANCE)))
+	anim.play("left")
 	print("main/GameBox/Player: Moved Left, v="+str(velocity.x))
 
 func PC_right(x):
@@ -47,6 +54,7 @@ func PC_right(x):
 		velocity.x = sqrt(2*500*(MOVE_DISTANCE))
 	else: 
 		velocity.x = min(sqrt(2*500*(x*MOVE_DISTANCE)),sqrt(2*500*(MAX_MOVE_MULTIPLIER*MOVE_DISTANCE)))
+	anim.play("right")
 	print("main/GameBox/Player: Moved Right, v="+str(velocity.x))
 
 func PC_jump(x):
