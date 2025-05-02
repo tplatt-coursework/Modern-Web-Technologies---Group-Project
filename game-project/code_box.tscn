@@ -48,7 +48,7 @@ expand_icon = true
 wait_time = 0.5
 
 [node name="Network_Timer" type="Timer" parent="."]
-wait_time = 0.5
+wait_time = 0.1
 
 [connection signal="pressed" from="RunButton" to="." method="_on_run_button_pressed"]
 [connection signal="timeout" from="Parse_Clock" to="." method="_on_parse_clock_timeout"]

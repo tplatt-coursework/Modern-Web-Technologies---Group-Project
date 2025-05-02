@@ -3,8 +3,8 @@ extends Node
 signal NET_CodeBox(x)
 signal NET_Run
 
-#const WS_ADDR = "ws://127.0.0.1:3500/ws"
-const WS_ADDR = "wss://tplatt.cs382.net/ws"
+const WS_ADDR = "ws://127.0.0.1:3500/ws"
+#const WS_ADDR = "wss://tplatt.cs382.net/ws"
 var socket = WebSocketPeer.new()
 var clientID = null
 var reconnect_attempts = 3
