@@ -1,7 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://srhaevr685ec"]
+[gd_scene load_steps=8 format=3 uid="uid://srhaevr685ec"]
 
 [ext_resource type="Script" path="res://code_box.gd" id="1_ihe8n"]
 [ext_resource type="Texture2D" uid="uid://frf5mtjdeck6" path="res://play-icon.svg" id="2_6fk8e"]
+[ext_resource type="Texture2D" uid="uid://scfvo7up801u" path="res://fcd852b1-e534-4774-9d39-7f151e70a4ec.png" id="2_sf0vs"]
+[ext_resource type="Texture2D" uid="uid://cesmybolpeqra" path="res://New Project (1).png" id="4_72js7"]
+[ext_resource type="PackedScene" uid="uid://ru7mmynw2b21" path="res://ESCMenu.tscn" id="5_7gdak"]
+[ext_resource type="AudioStream" uid="uid://dn715gre1u46m" path="res://Pixel Shuba Duck Dance.mp3" id="5_jra8x"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m13rt"]
 bg_color = Color(0.572549, 1, 0.717647, 1)
@@ -11,10 +15,17 @@ layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_ihe8n")
 
+[node name="Fcd852b1-e534-4774-9d39-7f151e70a4Ec" type="Sprite2D" parent="."]
+position = Vector2(578, 321)
+scale = Vector2(1.11719, 0.629883)
+texture = ExtResource("2_sf0vs")
+
 [node name="CodeEdit" type="CodeEdit" parent="."]
 layout_mode = 0
-offset_right = 335.0
-offset_bottom = 591.0
+offset_left = 444.0
+offset_top = 14.0
+offset_right = 749.0
+offset_bottom = 555.0
 theme_override_colors/background_color = Color(0.0588235, 0.215686, 0.266667, 1)
 placeholder_text = "Type code here...
 
@@ -34,9 +45,10 @@ Only type one command per line."
 
 [node name="RunButton" type="Button" parent="."]
 layout_mode = 0
-offset_top = 589.0
-offset_right = 335.0
-offset_bottom = 648.0
+offset_left = 440.0
+offset_top = 558.0
+offset_right = 752.0
+offset_bottom = 632.0
 theme_override_colors/font_color = Color(0.0392157, 0.14902, 0.188235, 1)
 theme_override_colors/icon_pressed_color = Color(0, 0, 0, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_m13rt")
@@ -49,6 +61,25 @@ wait_time = 0.5
 
 [node name="Network_Timer" type="Timer" parent="."]
 wait_time = 0.1
+
+[node name="NewProject(1)" type="Sprite2D" parent="."]
+position = Vector2(595.75, 317)
+scale = Vector2(0.662598, 0.673828)
+texture = ExtResource("4_72js7")
+
+[node name="ESCMenu" parent="." instance=ExtResource("5_7gdak")]
+visible = false
+layout_mode = 1
+offset_left = 483.0
+offset_top = 135.0
+offset_right = 558.0
+offset_bottom = 238.0
+scale = Vector2(3, 3)
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_jra8x")
+autoplay = true
+parameters/looping = true
 
 [connection signal="pressed" from="RunButton" to="." method="_on_run_button_pressed"]
 [connection signal="timeout" from="Parse_Clock" to="." method="_on_parse_clock_timeout"]

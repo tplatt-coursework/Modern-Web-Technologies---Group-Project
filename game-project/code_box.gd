@@ -23,6 +23,23 @@ var R_INT = RegEx.new()
 var R_WAIT = RegEx.new()
 var R_RESET = RegEx.new()
 
+@onready var esc_menu = $ESCMenu
+var pause = false 
+
+func _process(delta):
+	if Input.is_action_just_pressed("Pause"):
+		pauseMenu()
+
+func pauseMenu():
+	if pause:
+		esc_menu.hide()
+	else:
+		esc_menu.show()
+		
+	pause = !pause
+		
+
+
 #just to find the player node....
 func _recursive_find_node(node: Node, target_name: String) -> Node:
 	if node.name == target_name:

@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dn715gre1u46m"
+path="res://.godot/imported/Pixel Shuba Duck Dance.mp3-098865ce77c2323e3728d80e5792b87e.mp3str"
+
+[deps]
+
+source_file="res://Pixel Shuba Duck Dance.mp3"
+dest_files=["res://.godot/imported/Pixel Shuba Duck Dance.mp3-098865ce77c2323e3728d80e5792b87e.mp3str"]
+
+[params]
+
+loop=true
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
