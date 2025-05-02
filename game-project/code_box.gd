@@ -56,6 +56,8 @@ func _on_run_button_pressed() -> void:
 	run()
 
 func run():
+	$Parse_Clock.stop()
+	$Parse_Clock.set_wait_time(0.5)
 	PROGRAM_COUNTER = 0
 	user_code.clear()
 	user_code = $CodeEdit.text.split("\n")
@@ -111,6 +113,7 @@ func _parse_and_execute(line: String):
 	
 	elif R_WAIT.search(line):
 		$Parse_Clock.stop()
+		$Parse_Clock.set_wait_time(0.5)
 		var param = get_parameter(line)
 		if param == null: param = 1
 		await get_tree().create_timer(param).timeout

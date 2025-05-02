@@ -45,7 +45,7 @@ icon = ExtResource("2_6fk8e")
 expand_icon = true
 
 [node name="Parse_Clock" type="Timer" parent="."]
-wait_time = 0.25
+wait_time = 0.5
 
 [node name="Network_Timer" type="Timer" parent="."]
 wait_time = 0.5
