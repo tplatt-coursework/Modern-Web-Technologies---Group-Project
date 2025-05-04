@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://xiv5dfompkqr"]
+[gd_scene load_steps=18 format=3 uid="uid://xiv5dfompkqr"]
 
 [ext_resource type="Texture2D" uid="uid://bvvn02e7mmeuv" path="res://icon.svg" id="1_qq4s2"]
 [ext_resource type="Script" path="res://game_box.gd" id="1_v507y"]
@@ -11,8 +11,6 @@
 [ext_resource type="Texture2D" uid="uid://pl4t4s8lcuet" path="res://sprites/duck_idle.png" id="7_vjkvc"]
 [ext_resource type="Texture2D" uid="uid://dpwtgt7m3f2ma" path="res://sprites/duck_left2.png" id="8_7q0yh"]
 [ext_resource type="Texture2D" uid="uid://cfb30w5xapc1v" path="res://sprites/duck_right2.png" id="9_8dhwa"]
-[ext_resource type="AudioStream" uid="uid://dn715gre1u46m" path="res://Pixel Shuba Duck Dance.mp3" id="12_cleyu"]
-[ext_resource type="PackedScene" uid="uid://ru7mmynw2b21" path="res://ESCMenu.tscn" id="13_5j2pt"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_av0lk"]
 texture = ExtResource("1_qq4s2")
@@ -202,6 +200,7 @@ layer_0/tile_data = PackedInt32Array(-720925, 2, 0, -655389, 2, 1, -720924, 6553
 position = Vector2(-793, -26)
 disable_mode = 2
 script = ExtResource("2_661r0")
+metadata/_edit_group_ = true
 
 [node name="lookandmove" type="Node2D" parent="player"]
 
@@ -212,10 +211,11 @@ scale = Vector2(0.25, 0.25)
 texture = ExtResource("6_wseda")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="player/lookandmove"]
-position = Vector2(-2, 0)
+position = Vector2(8, 26)
 scale = Vector2(0.5, 0.5)
 sprite_frames = SubResource("SpriteFrames_3u28f")
 animation = &"idle"
+frame_progress = 0.288919
 
 [node name="Viewport" type="Camera2D" parent="player"]
 limit_left = 16
@@ -225,22 +225,7 @@ limit_bottom = 1168
 drag_right_margin = 0.8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="player"]
-position = Vector2(-10.375, -24.1875)
 shape = SubResource("RectangleShape2D_gx5gi")
 
-[node name="ESCMenu" parent="player" instance=ExtResource("13_5j2pt")]
-visible = false
-offset_left = 371.0
-offset_top = -415.0
-offset_right = 371.0
-offset_bottom = -415.0
-scale = Vector2(3, 3)
-
 [node name="Spawnpoint" type="Node2D" parent="."]
-position = Vector2(-792, -26)
-
-[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("12_cleyu")
-volume_db = -6.664
-autoplay = true
-parameters/looping = true
+position = Vector2(-793, -26)

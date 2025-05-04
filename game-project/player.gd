@@ -12,21 +12,6 @@ const MAX_MOVE_MULTIPLIER = 10
 const MAX_JUMP_MULTIPLIER = 10
 
 
-@onready var esc_menu = $ESCMenu
-var pause = false 
-
-func _process(delta):
-	if Input.is_action_just_pressed("Pause"):
-		pauseMenu()
-
-func pauseMenu():
-	if pause:
-		esc_menu.hide()
-	else:
-		esc_menu.show()
-		
-	pause = !pause
-		
 
 #
 #

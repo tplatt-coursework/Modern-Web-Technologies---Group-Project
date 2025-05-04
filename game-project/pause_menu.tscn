@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://v6vb4xxj2ljf"]
+
+[ext_resource type="PackedScene" uid="uid://ru7mmynw2b21" path="res://ESCMenu.tscn" id="1_g24xc"]
+
+[node name="Pause_Menu" type="CanvasLayer"]
+
+[node name="ESCMenu" parent="." instance=ExtResource("1_g24xc")]
+offset_right = -768.0
+offset_bottom = -432.0
+scale = Vector2(3, 3)

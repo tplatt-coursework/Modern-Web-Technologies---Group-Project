@@ -1,11 +1,77 @@
-[gd_scene load_steps=4 format=3 uid="uid://ru7mmynw2b21"]
+[gd_scene load_steps=9 format=3 uid="uid://ru7mmynw2b21"]
 
 [ext_resource type="Script" path="res://esc_menu.gd" id="1_fj01p"]
-[ext_resource type="Shader" path="res://ESCMenu.gdshader" id="2_idhqj"]
+[ext_resource type="Texture2D" uid="uid://pl4t4s8lcuet" path="res://sprites/duck_idle.png" id="2_ir63f"]
+[ext_resource type="Texture2D" uid="uid://c87koafi4fp2a" path="res://sprites/duck_left.png" id="3_uqjjm"]
+[ext_resource type="Texture2D" uid="uid://dpwtgt7m3f2ma" path="res://sprites/duck_left2.png" id="4_55avm"]
+[ext_resource type="Texture2D" uid="uid://eu8aixc4hh2" path="res://sprites/duck_right.png" id="5_1541w"]
+[ext_resource type="Texture2D" uid="uid://cfb30w5xapc1v" path="res://sprites/duck_right2.png" id="6_8k0pd"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_a2ke0"]
-shader = ExtResource("2_idhqj")
-shader_parameter/amount = 0.5
+[sub_resource type="SpriteFrames" id="SpriteFrames_877y6"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_ir63f")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_uqjjm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_55avm")
+}],
+"loop": true,
+"name": &"left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_1541w")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_8k0pd")
+}],
+"loop": true,
+"name": &"right",
+"speed": 5.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_6dwki"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_ir63f")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_uqjjm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_55avm")
+}],
+"loop": true,
+"name": &"left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_1541w")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_8k0pd")
+}],
+"loop": true,
+"name": &"right",
+"speed": 5.0
+}]
 
 [node name="ESCMenu" type="Control"]
 layout_mode = 3
@@ -17,17 +83,36 @@ grow_vertical = 2
 script = ExtResource("1_fj01p")
 
 [node name="ColorRect" type="ColorRect" parent="."]
-material = SubResource("ShaderMaterial_a2ke0")
-layout_mode = 2
-offset_top = 70.0
-offset_right = 70.0
-offset_bottom = 70.0
-color = Color(0, 0, 0, 1)
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0, 0, 0, 0.352941)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="ColorRect"]
+position = Vector2(442, 219)
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_877y6")
+animation = &"right"
+frame_progress = 0.182838
+
+[node name="AnimatedSprite2D2" type="AnimatedSprite2D" parent="ColorRect"]
+position = Vector2(745, 219)
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_6dwki")
+animation = &"left"
+frame_progress = 0.125596
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 421.0
+offset_top = 219.0
+offset_right = -402.0
+offset_bottom = -292.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
@@ -40,5 +125,46 @@ text = "Resume"
 layout_mode = 2
 text = "Menu"
 
+[node name="Control" type="Control" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="MarginContainer/VBoxContainer/Control"]
+layout_mode = 2
+offset_left = 69.0
+offset_top = 4.0
+offset_right = 329.0
+offset_bottom = 24.0
+min_value = -80.0
+max_value = 0.0
+step = 10.0
+value = -80.0
+rounded = true
+scrollable = false
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Control"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Volume: "
+
+[node name="Control2" type="Control" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Control2"]
+layout_mode = 0
+offset_top = 16.0
+offset_right = 148.0
+offset_bottom = 39.0
+text = "Show Network Info:"
+
+[node name="CheckButton" type="CheckButton" parent="MarginContainer/VBoxContainer/Control2"]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 18.0
+offset_right = 194.0
+offset_bottom = 42.0
+
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Resume" to="." method="_on_resume_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Menu" to="." method="_on_menu_pressed"]
+[connection signal="drag_ended" from="MarginContainer/VBoxContainer/Control/HSlider" to="." method="_on_h_slider_drag_ended"]
+[connection signal="toggled" from="MarginContainer/VBoxContainer/Control2/CheckButton" to="." method="_on_check_button_toggled"]

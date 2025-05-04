@@ -47,7 +47,7 @@ offset_top = 400.0
 offset_right = 496.0
 offset_bottom = 481.0
 
-[node name="Play" type="Button" parent="MarginContainer2"]
+[node name="Navigate" type="Button" parent="MarginContainer2"]
 self_modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 text = "Play"
@@ -59,9 +59,9 @@ offset_top = 400.0
 offset_right = 713.0
 offset_bottom = 482.0
 
-[node name="Driver" type="Button" parent="MarginContainer3"]
+[node name="Drive" type="Button" parent="MarginContainer3"]
 modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 
-[connection signal="pressed" from="MarginContainer2/Play" to="." method="_on_play_pressed"]
-[connection signal="pressed" from="MarginContainer3/Driver" to="." method="_on_driver_pressed"]
+[connection signal="pressed" from="MarginContainer2/Navigate" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="MarginContainer3/Drive" to="." method="_on_driver_pressed"]
