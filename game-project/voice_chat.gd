@@ -19,7 +19,14 @@ var active_speakers = []
 
 # Local audio playback (for hearing yourself)
 var local_audio_player = null
-var local_audio_enabled = true  # Set to true to enable hearing yourself
+var local_audio_enabled = false  # Set to false to disable hearing yourself
+var visual_feedback_enabled = true  # Enable visual feedback by default
+var feedback_tone_enabled = false  # Enable subtle feedback tone (not your voice)
+var is_web_mode = false  # Track if we're in web mode
+var web_mic_permission_requested = false
+var web_mic_permission_granted = false
+var web_error_count = 0
+var web_error_threshold = 10
 
 # Mic status colors
 var color_active = Color(0.27, 0.77, 0.35)  # Green
@@ -39,6 +46,9 @@ func _ready():
 	# Hide the speaking indicator initially
 	speaking_indicator.visible = false
 	
+	# Check if we're running in web mode
+	is_web_mode = OS.get_name() == "HTML5"
+	
 	# Initialize audio recording
 	print("Voice Chat: Setting up audio recording...")
 	recording_bus_idx = AudioServer.get_bus_index("Record")
@@ -57,6 +67,42 @@ func _ready():
 	local_audio_player = AudioStreamPlayer.new()
 	add_child(local_audio_player)
 	print("Voice Chat: Local audio player initialized")
+	print("Voice Chat: Local audio feedback is DISABLED by default")
+	print("Voice Chat: Use the speaking indicator for visual feedback")
+	
+	# Web mode - simplify UI and automatically enable microphone after a delay
+	if is_web_mode:
+		print("Voice Chat: Web mode detected - using simplified controls")
+		$VoiceChatPanel/VBoxContainer/WebMessage.visible = true
+		# Hide complex controls in web mode
+		$VoiceChatPanel/VBoxContainer/WebButtonControls.visible = false
+		
+		# Display browser-specific instructions
+		$VoiceChatPanel/VBoxContainer/WebMessage.text = "Click 'Allow' when browser asks for microphone permission"
+		$VoiceChatPanel/VBoxContainer/WebMessage.add_theme_color_override("font_color", Color(0.9, 0.6, 0.1, 1.0))
+		
+		# Add status update timer for web mode
+		var status_timer = Timer.new()
+		status_timer.wait_time = 2.0
+		status_timer.one_shot = false
+		status_timer.connect("timeout", _on_web_status_update)
+		add_child(status_timer)
+		status_timer.start()
+		
+		# Setup permission request timer with a slight delay
+		var permission_timer = Timer.new()
+		permission_timer.wait_time = 1.0
+		permission_timer.one_shot = true
+		permission_timer.connect("timeout", _on_browser_permission_request)
+		add_child(permission_timer)
+		permission_timer.start()
+	else:
+		# Desktop mode - use all controls
+		$VoiceChatPanel/VBoxContainer/WebMessage.visible = false
+		$VoiceChatPanel/VBoxContainer/WebButtonControls.visible = false
+	
+	# Show initial feedback message
+	show_feedback_message("Voice feedback: Visual indicator ENABLED, Audio feedback DISABLED")
 	
 	# Connect to networking signals
 	if has_node("/root/Main/NetworkingNode"):
@@ -78,13 +124,21 @@ func _ready():
 	# Make sure empty speaker message is visible initially
 	check_empty_speaker()
 	
-	# Start heartbeat timer to keep connections alive
+	# Start heartbeat timer to keep connections alive - more frequent (3 seconds)
 	var heartbeat_timer = Timer.new()
-	heartbeat_timer.wait_time = 5.0  # Send heartbeat every 5 seconds
+	heartbeat_timer.wait_time = 3.0  # Send heartbeat every 3 seconds
 	heartbeat_timer.one_shot = false
 	heartbeat_timer.autostart = true
 	heartbeat_timer.connect("timeout", _on_heartbeat_timer_timeout)
 	add_child(heartbeat_timer)
+	
+	# Also add a backup safety timer that forcibly refreshes speakers
+	var safety_timer = Timer.new()
+	safety_timer.wait_time = 10.0  # Force refresh every 10 seconds
+	safety_timer.one_shot = false
+	safety_timer.autostart = true
+	safety_timer.connect("timeout", _on_safety_timer_timeout)
+	add_child(safety_timer)
 
 func _process(delta):
 	if recording:
@@ -101,12 +155,6 @@ func _process(delta):
 	
 	# Update the empty speaker visibility
 	check_empty_speaker()
-	
-	# Check for keyboard input to toggle local audio
-	if Input.is_key_pressed(KEY_L) && Input.is_action_just_pressed("ui_accept"):
-		var is_enabled = toggle_local_audio()
-		print("Local audio feedback: ", "Enabled" if is_enabled else "Disabled")
-		# Visual feedback could be added here
 
 func check_empty_speaker():
 	# Show empty speaker only if there are no active speakers
@@ -168,16 +216,33 @@ func stop_recording():
 
 func send_voice_data():
 	if effect == null:
-		print("Voice Chat: ERROR - Recording effect is null!")
+		# Reduce console spam
+		# print("Voice Chat: ERROR - Recording effect is null!")
 		return
 		
 	if !effect.is_recording_active():
-		print("Voice Chat: WARNING - Recording not active when trying to send data")
+		# Reduce console spam
+		# print("Voice Chat: WARNING - Recording not active when trying to send data")
 		return
 		
 	var recording_obj = effect.get_recording()
 	if recording_obj == null:
-		print("Voice Chat: WARNING - Recording object is null")
+		web_error_count += 1
+		
+		# Only log every few errors to avoid console spam
+		if web_error_count % 50 == 0:  # Increased from 10 to 50 for less frequent logging
+			print("Voice Chat: WARNING - Recording object is null (count: " + str(web_error_count) + ")")
+			
+		# If we hit the error threshold in web mode, show a message and try to reset
+		if is_web_mode and web_error_count >= web_error_threshold and web_error_count % web_error_threshold == 0:
+			print("Voice Chat: Attempting to reset recording after repeated errors")
+			$VoiceChatPanel/VBoxContainer/WebMessage.text = "Microphone not working. Try reloading page"
+			$VoiceChatPanel/VBoxContainer/WebMessage.add_theme_color_override("font_color", Color(0.9, 0.2, 0.2, 1.0))
+			
+			# Try to reset the recording
+			effect.set_recording_active(false)
+			await get_tree().create_timer(0.5).timeout
+			effect.set_recording_active(true)
 		return
 		
 	var data = recording_obj.get_data()
@@ -185,20 +250,48 @@ func send_voice_data():
 		# Not an error, just no sound data
 		return
 		
+	# Reset error count since we successfully got data
+	web_error_count = 0
+		
 	# Only send if there's actual voice (not just silence)
 	var amplitude = get_voice_amplitude(data)
+	var was_speaking = is_speaking
 	is_speaking = amplitude > 0.01  # Adjust threshold as needed
 	
+	# If this is first successful voice detection in web mode, update the UI
+	if is_web_mode and is_speaking and !web_mic_permission_granted:
+		web_mic_permission_granted = true
+		$VoiceChatPanel/VBoxContainer/WebMessage.text = "Microphone working!"
+		$VoiceChatPanel/VBoxContainer/WebMessage.add_theme_color_override("font_color", Color(0.2, 0.8, 0.3, 1.0))
+	
+	# Update speaking indicator
+	if visual_feedback_enabled:
+		speaking_indicator.visible = is_speaking
+		
+		# Make speaking indicator pulse when active
+		if is_speaking and not was_speaking:
+			var tween = create_tween()
+			tween.tween_property(speaking_indicator, "modulate", Color(1, 1, 1, 1), 0.1)
+			tween.tween_property(speaking_indicator, "modulate", Color(0.8, 1, 0.8, 0.8), 0.2)
+			tween.set_loops(2)
+	
 	if is_speaking:
-		print("Voice Chat: Sending voice data, size: ", data.size())
+		# Reduce console spam
+		# print("Voice Chat: Sending voice data, size: ", data.size())
 		if has_node("/root/Main/NetworkingNode"):
 			var net_node = get_node("/root/Main/NetworkingNode")
 			net_node.send_voice_data(data.to_base64_string())
 			
-			# Play audio locally so the user can hear themselves
-			play_local_audio(data)
+			# Play audio locally only if explicitly enabled by the user
+			if local_audio_enabled:
+				play_local_audio(data)
+			# Play feedback tone if enabled (very subtle "click" sound)
+			elif feedback_tone_enabled and not was_speaking:
+				play_feedback_tone()
 		else:
-			print("Voice Chat: ERROR - NetworkingNode not found when trying to send!")
+			# Reduce console spam
+			# print("Voice Chat: ERROR - NetworkingNode not found when trying to send!")
+			pass
 		
 	# Reset the recording to avoid accumulating audio
 	effect.set_recording_active(false)
@@ -228,8 +321,17 @@ func play_local_audio(audio_data):
 	local_audio_player.play()
 
 func _on_voice_data_received(data_base64, client_id):
-	print("Voice Chat: Received voice data from: ", client_id)
+	# Reduce console spam
+	# print("Voice Chat: Received voice data from: ", client_id)
 	emit_signal("voice_data_received", data_base64, client_id)
+	
+	# Check if this is our own clientID - we might be getting our own voice data back
+	if has_node("/root/Main/NetworkingNode"):
+		var net_node = get_node("/root/Main/NetworkingNode")
+		if client_id == net_node.clientID:
+			# Reduce console spam
+			# print("Voice Chat: Ignoring own voice data")
+			return
 	
 	# Create speaker if it doesn't exist
 	if !speakers.has(client_id):
@@ -243,7 +345,8 @@ func _on_voice_data_received(data_base64, client_id):
 		# Update empty speaker visibility
 		check_empty_speaker()
 		
-		print("Voice Chat: Added new speaker to UI: ", client_id)
+		# Reduce console spam
+		# print("Voice Chat: Added new speaker to UI: ", client_id)
 	else:
 		# Update last active time
 		speakers[client_id]["last_active"] = Time.get_ticks_msec()
@@ -253,7 +356,8 @@ func _on_voice_data_received(data_base64, client_id):
 	
 	# If data is empty, this is just a presence announcement
 	if data_base64.is_empty():
-		print("Voice Chat: Received presence announcement from: ", client_id)
+		# Reduce console spam
+		# print("Voice Chat: Received presence announcement from: ", client_id)
 		# Respond back to ensure bidirectional awareness
 		if has_node("/root/Main/NetworkingNode"):
 			var net_node = get_node("/root/Main/NetworkingNode")
@@ -317,38 +421,18 @@ func update_speaker_ui(client_id, is_active):
 
 func update_speakers_list():
 	var current_time = Time.get_ticks_msec()
-	var speakers_to_remove = []
 	
-	# Check for inactive speakers (no audio for 30 seconds)
+	# Don't remove speakers, just update their UI state
 	for client_id in speakers.keys():
 		var elapsed = current_time - speakers[client_id]["last_active"]
 		
-		# If they've been inactive for 30 seconds, update UI but keep visible
-		if elapsed > 30000:
+		# If they've been inactive for 2 minutes, only update UI
+		if elapsed > 120000:
 			update_speaker_ui(client_id, false)
 		else:
 			update_speaker_ui(client_id, true)
 		
-		# Only mark for removal if they've been gone for 5 minutes (300 seconds)
-		# This is mainly to handle browser refreshes or disconnections
-		if elapsed > 300000:
-			speakers_to_remove.append(client_id)
-	
-	# Remove very old speakers that have been inactive for 5 minutes
-	for client_id in speakers_to_remove:
-		if speakers.has(client_id) and speakers[client_id]["label"] != null:
-			print("Voice Chat: Removing inactive speaker after 5 minutes: ", client_id)
-			speakers[client_id]["label"].queue_free()
-			speakers[client_id]["player"].queue_free()
-			speakers.erase(client_id)
-			
-			# Remove from active speakers
-			if active_speakers.has(client_id):
-				active_speakers.erase(client_id)
-				
-	# Update empty speaker visibility after cleanup
-	if speakers_to_remove.size() > 0:
-		check_empty_speaker()
+		# NEVER automatically remove speakers - let the server handle this
 
 func _on_client_connected(client_id):
 	print("Voice Chat: Client connected with ID: ", client_id)
@@ -362,13 +446,19 @@ func _on_heartbeat_timer_timeout():
 	if has_node("/root/Main/NetworkingNode"):
 		var net_node = get_node("/root/Main/NetworkingNode")
 		if net_node.clientID != null:
+			# Reduce console spam
+			# print("Voice Chat: Sending heartbeat")
 			net_node.announce_presence()
 	
-	# Also refresh the UI for all speakers
+	# Also refresh the UI for all speakers - this is crucial to keep them visible
+	var current_time = Time.get_ticks_msec()
 	for client_id in speakers.keys():
-		# Keep all speakers active
-		speakers[client_id]["last_active"] = Time.get_ticks_msec()
-		update_speaker_ui(client_id, true) 
+		# Keep all speakers active by refreshing their last_active timestamp
+		speakers[client_id]["last_active"] = current_time
+		update_speaker_ui(client_id, true)
+	
+	# Also check if we need to update the empty speaker message
+	check_empty_speaker()
 
 # Toggle local audio feedback
 func toggle_local_audio():
@@ -377,11 +467,29 @@ func toggle_local_audio():
 	return local_audio_enabled 
 
 func _input(event):
+	# Only handle keyboard input in desktop mode
+	if is_web_mode:
+		return
+		
 	# Add keyboard shortcut to toggle local audio feedback with the 'L' key
 	if event is InputEventKey and event.pressed and event.keycode == KEY_L:
 		var is_enabled = toggle_local_audio()
 		# Show temporary visual feedback
-		var feedback_text = "Local audio: " + ("ON" if is_enabled else "OFF")
+		var feedback_text = "Voice local feedback: " + ("ON" if is_enabled else "OFF")
+		print(feedback_text)
+		show_feedback_message(feedback_text)
+	
+	# Add keyboard shortcut to toggle feedback tone with the 'T' key
+	if event is InputEventKey and event.pressed and event.keycode == KEY_T:
+		feedback_tone_enabled = !feedback_tone_enabled
+		var feedback_text = "Voice tone feedback: " + ("ON" if feedback_tone_enabled else "OFF")
+		print(feedback_text)
+		show_feedback_message(feedback_text)
+		
+	# Add keyboard shortcut to toggle visual feedback with the 'V' key
+	if event is InputEventKey and event.pressed and event.keycode == KEY_V:
+		visual_feedback_enabled = !visual_feedback_enabled
+		var feedback_text = "Visual feedback: " + ("ON" if visual_feedback_enabled else "OFF")
 		print(feedback_text)
 		show_feedback_message(feedback_text)
 
@@ -397,3 +505,92 @@ func show_feedback_message(text):
 	var tween = create_tween()
 	tween.tween_property(feedback, "modulate", Color(1, 1, 1, 0), 2.0)
 	tween.tween_callback(feedback.queue_free)
+
+func _on_safety_timer_timeout():
+	# Reduce console spam
+	# print("Voice Chat: Running safety refresh of speakers")
+	
+	# Force refresh all known speakers
+	for client_id in speakers.keys():
+		# Keep all speakers active for a longer period
+		speakers[client_id]["last_active"] = Time.get_ticks_msec()
+		update_speaker_ui(client_id, true)
+	
+	# Request a fresh presence announcement from all clients
+	if has_node("/root/Main/NetworkingNode"):
+		var net_node = get_node("/root/Main/NetworkingNode")
+		if net_node.clientID != null:
+			net_node.announce_presence()
+	
+	# Ensure empty speaker message is updated
+	check_empty_speaker()
+
+# Play a subtle tone to indicate voice is being detected
+func play_feedback_tone():
+	# Create a very short, subtle tone
+	var stream = AudioStreamWAV.new()
+	stream.format = AudioStreamWAV.FORMAT_16_BITS
+	stream.mix_rate = 44100
+	stream.stereo = false
+	
+	# Generate a short, subtle "click" sound
+	var data = []
+	for i in range(0, 4000):
+		var value = 0
+		if i < 100:
+			value = sin(i * 0.3) * 0.3 * (100 - i) / 100.0
+		data.append(int(value * 32767))
+	
+	stream.data = PackedByteArray(data)
+	
+	# Play at very low volume
+	local_audio_player.stream = stream
+	local_audio_player.volume_db = -25
+	local_audio_player.play()
+
+func _on_browser_permission_request():
+	if !is_web_mode:
+		return
+	
+	print("Voice Chat: Browser - requesting microphone permission")
+	$VoiceChatPanel/VBoxContainer/WebMessage.text = "Requesting microphone access..."
+	web_mic_permission_requested = true
+	
+	# In web mode, attempt to activate the microphone automatically
+	start_recording()
+	
+	# Check if it was successful
+	if effect != null && effect.is_recording_active():
+		print("Voice Chat: Browser - microphone permission granted")
+		web_mic_permission_granted = true
+		mic_active = true
+		update_mic_state(true)
+		$VoiceChatPanel/VBoxContainer/WebMessage.text = "Microphone active"
+		$VoiceChatPanel/VBoxContainer/WebMessage.add_theme_color_override("font_color", Color(0.2, 0.8, 0.3, 1.0))
+	else:
+		print("Voice Chat: Browser - microphone permission denied or error")
+		web_mic_permission_granted = false
+		mic_active = false
+		update_mic_state(false)
+		$VoiceChatPanel/VBoxContainer/WebMessage.text = "Could not access microphone. Click mic icon to try again."
+		$VoiceChatPanel/VBoxContainer/WebMessage.add_theme_color_override("font_color", Color(0.9, 0.2, 0.2, 1.0))
+
+func _on_web_status_update():
+	if !is_web_mode:
+		return
+	
+	# Check if we're connected to the server
+	if has_node("/root/Main/NetworkingNode"):
+		var net_node = get_node("/root/Main/NetworkingNode")
+		if net_node.clientID != null:
+			print("Voice Chat: Web status update - connected to server")
+			$VoiceChatPanel/VBoxContainer/WebMessage.text = "Connected to server"
+			$VoiceChatPanel/VBoxContainer/WebMessage.add_theme_color_override("font_color", Color(0.2, 0.8, 0.3, 1.0))
+		else:
+			print("Voice Chat: Web status update - not connected to server")
+			$VoiceChatPanel/VBoxContainer/WebMessage.text = "Not connected to server"
+			$VoiceChatPanel/VBoxContainer/WebMessage.add_theme_color_override("font_color", Color(0.9, 0.2, 0.2, 1.0))
+	else:
+		print("Voice Chat: Web status update - NetworkingNode not found")
+		$VoiceChatPanel/VBoxContainer/WebMessage.text = "NetworkingNode not found"
+		$VoiceChatPanel/VBoxContainer/WebMessage.add_theme_color_override("font_color", Color(0.9, 0.2, 0.2, 1.0))

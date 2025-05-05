@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://b8fpvg4l4f6dj"]
 
-[ext_resource type="Script" path="res://voice_chat.gd" id="1_4j4xk"]
+[ext_resource type="Script" uid="uid://bax3n7ud00662" path="res://voice_chat.gd" id="1_4j4xk"]
 [ext_resource type="Texture2D" uid="uid://cvqcg0hgn7dbn" path="res://mic-icon.svg" id="2_vxhsc"]
 [ext_resource type="Texture2D" uid="uid://csd2yjyuhxrb3" path="res://mic-muted-icon.svg" id="3_l3vb8"]
 
@@ -62,7 +62,7 @@ layout_mode = 1
 offset_left = 10.0
 offset_top = 10.0
 offset_right = 180.0
-offset_bottom = 130.0
+offset_bottom = 160.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_7utbx")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="VoiceChatPanel"]
@@ -91,6 +91,15 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_constants/separation = 2
 theme_override_styles/separator = SubResource("StyleBoxLine_8e8s7")
+
+[node name="WebMessage" type="Label" parent="VoiceChatPanel/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.803922, 0.623529, 0.305882, 1)
+theme_override_font_sizes/font_size = 10
+text = "Web mode - microphone will activate automatically"
+horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="MarginContainer2" type="MarginContainer" parent="VoiceChatPanel/VBoxContainer"]
 layout_mode = 2
@@ -197,5 +206,10 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 color = Color(0.27451, 0.768627, 0.345098, 1)
+
+[node name="WebButtonControls" type="VBoxContainer" parent="VoiceChatPanel/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 3
 
 [connection signal="pressed" from="VoiceChatPanel/VBoxContainer/MarginContainer3/MicControls/MicButton" to="." method="_on_mic_button_pressed"]
