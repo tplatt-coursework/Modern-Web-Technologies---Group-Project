@@ -44,10 +44,14 @@ app.ws('/ws',(ws,req)=>{
     }
     ws.send(JSON.stringify(on_connect))
 
-    // Announce to all clients that a new user has connected
+    // Announce new client to all existing clients
+    console.log(`Announcing new client ${ws.id} to all existing clients. Total clients: ${Object.keys(clients).length}`)
+    
+    // Send list of existing clients to the new client
     for(const [id,socket] of Object.entries(clients)){
         if(id != ws.id){
-            let announce = {
+            // Tell existing clients about the new client
+            let announceToExisting = {
                 code:201,
                 source:ws.id,
                 response:JSON.stringify({
@@ -55,15 +59,28 @@ app.ws('/ws',(ws,req)=>{
                     content:ws.id
                 })
             }
-
-            let payload = JSON.stringify(announce)
-            socket.send(payload);
+            socket.send(JSON.stringify(announceToExisting));
+            
+            // Tell the new client about existing clients
+            let announceToNew = {
+                code:201,
+                source:id,
+                response:JSON.stringify({
+                    note:"User Present",
+                    content:id
+                })
+            }
+            ws.send(JSON.stringify(announceToNew));
+            
+            console.log(`Cross-announced clients ${ws.id} and ${id}`)
         }
     }
 
     ws.on('message',data=>{
         try{
             let message = data.toString('utf-8')           
+            let parsedMsg = JSON.parse(message);
+            console.log(`Received message from ${ws.id}:`, parsedMsg.note);
 
             for(const [id,socket] of Object.entries(clients)){
                 if(id != ws.id){
@@ -86,10 +103,6 @@ app.ws('/ws',(ws,req)=>{
 
             let payload = JSON.stringify(buffer)
             ws.send(payload);
-
-
-            
-    
         }catch(e){
             console.group(`message from ${ws.id}`)
 
@@ -122,7 +135,6 @@ app.ws('/ws',(ws,req)=>{
     ws.onerror = error => {
         console.error('WebSocket error:', error)
     }
-    // })
 })
 
 
