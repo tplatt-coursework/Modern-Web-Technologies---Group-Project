@@ -2,6 +2,7 @@ extends Node
 
 signal NET_CodeBox(x)
 signal NET_Run
+signal NET_VoiceData(data, client_id)
 
 #const WS_ADDR = "ws://127.0.0.1:3500/ws"
 const WS_ADDR = "wss://tplatt.cs382.net/ws"
@@ -69,6 +70,12 @@ func send_codebox(message):
 	}
 	socket.send_text(JSON.stringify(payload))
 
+func send_voice_data(voice_data):
+	var payload = {
+		"note":"Voice Data",
+		"content":voice_data
+	}
+	socket.send_text(JSON.stringify(payload))
 
 
 func parse_packet(packet):
@@ -101,6 +108,9 @@ func parse_packet(packet):
 				elif response["note"] == "Run Game":
 					print("main/NetworkingNode: Running.")
 					NET_Run.emit()
+				elif response["note"] == "Voice Data" && response["content"] != null:
+					print("main/NetworkingNode: Voice data received.")
+					NET_VoiceData.emit(response["content"], source)
 				else:print("main/NetworkingNode: Message Not Foratted Properly.")
 			else:print("main/NetworkingNode: Message Not Foratted Properly.")
 		

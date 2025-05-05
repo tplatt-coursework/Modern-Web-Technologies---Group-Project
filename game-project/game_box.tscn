@@ -1,9 +1,9 @@
 [gd_scene load_steps=18 format=3 uid="uid://xiv5dfompkqr"]
 
 [ext_resource type="Texture2D" uid="uid://bvvn02e7mmeuv" path="res://icon.svg" id="1_qq4s2"]
-[ext_resource type="Script" path="res://game_box.gd" id="1_v507y"]
+[ext_resource type="Script" uid="uid://bewweqrvhmhfm" path="res://game_box.gd" id="1_v507y"]
 [ext_resource type="Texture2D" uid="uid://318b0kq2gecb" path="res://grass.png" id="2_467yc"]
-[ext_resource type="Script" path="res://player.gd" id="2_661r0"]
+[ext_resource type="Script" uid="uid://tb8jytnwrv83" path="res://player.gd" id="2_661r0"]
 [ext_resource type="Texture2D" uid="uid://br25cjxb6cb5m" path="res://background1.jpg" id="4_rv46l"]
 [ext_resource type="Texture2D" uid="uid://cbco5nuthon6x" path="res://sprites/goal.png" id="4_yr0i4"]
 [ext_resource type="Texture2D" uid="uid://eu8aixc4hh2" path="res://sprites/duck_right.png" id="6_wseda"]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b8ommbext8jju"]
 
-[ext_resource type="Script" path="res://networking_node.gd" id="1_rubcw"]
+[ext_resource type="Script" uid="uid://byeqximv5nxt6" path="res://networking_node.gd" id="1_rubcw"]
 
 [node name="NetworkingNode" type="Node"]
 script = ExtResource("1_rubcw")

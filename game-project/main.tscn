@@ -1,12 +1,13 @@
-[gd_scene load_steps=8 format=3 uid="uid://dvaq47use4sqh"]
+[gd_scene load_steps=9 format=3 uid="uid://b67osm7kkypg4"]
 
 [ext_resource type="PackedScene" uid="uid://srhaevr685ec" path="res://code_box.tscn" id="1_7u6uk"]
-[ext_resource type="Script" path="res://main.gd" id="1_spvti"]
+[ext_resource type="Script" uid="uid://cigloemobe0ai" path="res://main.gd" id="1_spvti"]
 [ext_resource type="PackedScene" uid="uid://xiv5dfompkqr" path="res://game_box.tscn" id="2_jc0vt"]
 [ext_resource type="PackedScene" uid="uid://b8ommbext8jju" path="res://networking_node.tscn" id="3_awc6a"]
 [ext_resource type="PackedScene" uid="uid://ru7mmynw2b21" path="res://ESCMenu.tscn" id="5_sofio"]
 [ext_resource type="AudioStream" uid="uid://dn715gre1u46m" path="res://Pixel Shuba Duck Dance.mp3" id="5_y5mh2"]
-[ext_resource type="Script" path="res://audio_stream_player_2d.gd" id="6_ofj1o"]
+[ext_resource type="Script" uid="uid://dblag0wcajm3o" path="res://audio_stream_player_2d.gd" id="6_ofj1o"]
+[ext_resource type="PackedScene" uid="uid://b8fpvg4l4f6dj" path="res://voice_chat.tscn" id="8_vkdiu"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -69,6 +70,8 @@ attenuation = 1e-05
 panning_strength = 0.0
 parameters/looping = true
 script = ExtResource("6_ofj1o")
+
+[node name="VoiceChat" parent="CanvasLayer" instance=ExtResource("8_vkdiu")]
 
 [connection signal="NET_CodeBox" from="NetworkingNode" to="." method="_on_networking_node_net_code_box"]
 [connection signal="NET_Run" from="NetworkingNode" to="." method="_on_networking_node_net_run"]
