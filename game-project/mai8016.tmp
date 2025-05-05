@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://b67osm7kkypg4"]
+[gd_scene load_steps=8 format=3 uid="uid://b67osm7kkypg4"]
 
 [ext_resource type="PackedScene" uid="uid://srhaevr685ec" path="res://code_box.tscn" id="1_7u6uk"]
 [ext_resource type="Script" path="res://main.gd" id="1_spvti"]
@@ -7,7 +7,6 @@
 [ext_resource type="PackedScene" uid="uid://ru7mmynw2b21" path="res://ESCMenu.tscn" id="5_sofio"]
 [ext_resource type="AudioStream" uid="uid://dn715gre1u46m" path="res://Pixel Shuba Duck Dance.mp3" id="5_y5mh2"]
 [ext_resource type="Script" path="res://audio_stream_player_2d.gd" id="6_ofj1o"]
-[ext_resource type="PackedScene" uid="uid://b8fpvg4l4f6dj" path="res://voice_chat.tscn" id="8_vkdiu"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -31,40 +30,34 @@ offset_bottom = 648.0
 
 [node name="CheckButton" type="CheckButton" parent="CanvasLayer"]
 visible = false
-offset_right = 228.0
-offset_bottom = 31.0
+offset_left = 879.0
+offset_top = 532.0
+offset_right = 1107.0
+offset_bottom = 563.0
 text = "Only driver enable this:"
 
 [node name="NetworkInfo" type="Label" parent="CanvasLayer"]
-visible = false
-offset_left = 17.0
-offset_top = 139.0
-offset_right = 185.0
-offset_bottom = 162.0
+offset_left = 23.0
+offset_top = 161.0
+offset_right = 191.0
+offset_bottom = 184.0
 text = "Network Connection: "
 
 [node name="NetworkData" type="Label" parent="CanvasLayer"]
-visible = false
-offset_left = 184.0
-offset_top = 139.0
-offset_right = 236.0
-offset_bottom = 162.0
+offset_left = 190.0
+offset_top = 161.0
+offset_right = 242.0
+offset_bottom = 184.0
 text = "n/a"
 
 [node name="ErrorOutput" type="Label" parent="CanvasLayer"]
-offset_left = 17.0
-offset_top = 158.0
-offset_right = 72.0
-offset_bottom = 181.0
+offset_left = 23.0
+offset_top = 141.0
+offset_right = 78.0
+offset_bottom = 164.0
 
 [node name="ESCMenu" parent="CanvasLayer" instance=ExtResource("5_sofio")]
 visible = false
-
-[node name="VoiceChat" parent="CanvasLayer" instance=ExtResource("8_vkdiu")]
-offset_left = 7.0
-offset_top = 7.0
-offset_right = -961.0
-offset_bottom = -510.0
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
 position = Vector2(1157, 535)

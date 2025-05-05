@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://ru7mmynw2b21"]
 
-[ext_resource type="Script" uid="uid://cob5ykq533uke" path="res://esc_menu.gd" id="1_fj01p"]
+[ext_resource type="Script" path="res://esc_menu.gd" id="1_fj01p"]
 [ext_resource type="Texture2D" uid="uid://pl4t4s8lcuet" path="res://sprites/duck_idle.png" id="2_ir63f"]
 [ext_resource type="Texture2D" uid="uid://c87koafi4fp2a" path="res://sprites/duck_left.png" id="3_uqjjm"]
 [ext_resource type="Texture2D" uid="uid://dpwtgt7m3f2ma" path="res://sprites/duck_left2.png" id="4_55avm"]
