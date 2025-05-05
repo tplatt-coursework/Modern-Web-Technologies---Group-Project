@@ -17,6 +17,10 @@ var is_speaking = false
 var speakers = {}
 var active_speakers = []
 
+# Local audio playback (for hearing yourself)
+var local_audio_player = null
+var local_audio_enabled = true  # Set to true to enable hearing yourself
+
 # Mic status colors
 var color_active = Color(0.27, 0.77, 0.35)  # Green
 var color_muted = Color(0.8, 0.2, 0.2)      # Red
@@ -49,6 +53,11 @@ func _ready():
 	AudioServer.add_bus_effect(recording_bus_idx, effect)
 	print("Voice Chat: Recording effect added to bus")
 	
+	# Initialize local audio playback
+	local_audio_player = AudioStreamPlayer.new()
+	add_child(local_audio_player)
+	print("Voice Chat: Local audio player initialized")
+	
 	# Connect to networking signals
 	if has_node("/root/Main/NetworkingNode"):
 		var net_node = get_node("/root/Main/NetworkingNode")
@@ -68,6 +77,14 @@ func _ready():
 	
 	# Make sure empty speaker message is visible initially
 	check_empty_speaker()
+	
+	# Start heartbeat timer to keep connections alive
+	var heartbeat_timer = Timer.new()
+	heartbeat_timer.wait_time = 5.0  # Send heartbeat every 5 seconds
+	heartbeat_timer.one_shot = false
+	heartbeat_timer.autostart = true
+	heartbeat_timer.connect("timeout", _on_heartbeat_timer_timeout)
+	add_child(heartbeat_timer)
 
 func _process(delta):
 	if recording:
@@ -84,6 +101,12 @@ func _process(delta):
 	
 	# Update the empty speaker visibility
 	check_empty_speaker()
+	
+	# Check for keyboard input to toggle local audio
+	if Input.is_key_pressed(KEY_L) && Input.is_action_just_pressed("ui_accept"):
+		var is_enabled = toggle_local_audio()
+		print("Local audio feedback: ", "Enabled" if is_enabled else "Disabled")
+		# Visual feedback could be added here
 
 func check_empty_speaker():
 	# Show empty speaker only if there are no active speakers
@@ -171,6 +194,9 @@ func send_voice_data():
 		if has_node("/root/Main/NetworkingNode"):
 			var net_node = get_node("/root/Main/NetworkingNode")
 			net_node.send_voice_data(data.to_base64_string())
+			
+			# Play audio locally so the user can hear themselves
+			play_local_audio(data)
 		else:
 			print("Voice Chat: ERROR - NetworkingNode not found when trying to send!")
 		
@@ -183,6 +209,23 @@ func get_voice_amplitude(data):
 	for i in range(min(data.size(), 2000)):  # Sample a portion for efficiency
 		sum += abs(data[i])
 	return sum / min(data.size(), 2000)
+
+func play_local_audio(audio_data):
+	# Only play local audio if the feature is enabled
+	if !local_audio_enabled:
+		return
+		
+	# Create an audio stream from the data for local playback
+	var stream = AudioStreamWAV.new()
+	stream.format = AudioStreamWAV.FORMAT_16_BITS
+	stream.mix_rate = 44100  # Standard sample rate
+	stream.stereo = false
+	stream.data = audio_data
+	
+	# Play the audio locally
+	local_audio_player.stream = stream
+	local_audio_player.volume_db = -10  # Lower volume for local feedback to avoid echo
+	local_audio_player.play()
 
 func _on_voice_data_received(data_base64, client_id):
 	print("Voice Chat: Received voice data from: ", client_id)
@@ -199,6 +242,8 @@ func _on_voice_data_received(data_base64, client_id):
 		
 		# Update empty speaker visibility
 		check_empty_speaker()
+		
+		print("Voice Chat: Added new speaker to UI: ", client_id)
 	else:
 		# Update last active time
 		speakers[client_id]["last_active"] = Time.get_ticks_msec()
@@ -209,6 +254,10 @@ func _on_voice_data_received(data_base64, client_id):
 	# If data is empty, this is just a presence announcement
 	if data_base64.is_empty():
 		print("Voice Chat: Received presence announcement from: ", client_id)
+		# Respond back to ensure bidirectional awareness
+		if has_node("/root/Main/NetworkingNode"):
+			var net_node = get_node("/root/Main/NetworkingNode")
+			net_node.announce_presence()
 		return
 	
 	# Convert Base64 back to audio data
@@ -270,21 +319,25 @@ func update_speakers_list():
 	var current_time = Time.get_ticks_msec()
 	var speakers_to_remove = []
 	
-	# Check for inactive speakers (no audio for 5 seconds)
+	# Check for inactive speakers (no audio for 30 seconds)
 	for client_id in speakers.keys():
 		var elapsed = current_time - speakers[client_id]["last_active"]
 		
-		# If they've been inactive for 5 seconds, update UI
-		if elapsed > 5000:
+		# If they've been inactive for 30 seconds, update UI but keep visible
+		if elapsed > 30000:
 			update_speaker_ui(client_id, false)
+		else:
+			update_speaker_ui(client_id, true)
 		
-		# If they've been inactive for 60 seconds, mark for cleanup
-		if elapsed > 60000:
+		# Only mark for removal if they've been gone for 5 minutes (300 seconds)
+		# This is mainly to handle browser refreshes or disconnections
+		if elapsed > 300000:
 			speakers_to_remove.append(client_id)
 	
-	# Remove very old speakers
+	# Remove very old speakers that have been inactive for 5 minutes
 	for client_id in speakers_to_remove:
 		if speakers.has(client_id) and speakers[client_id]["label"] != null:
+			print("Voice Chat: Removing inactive speaker after 5 minutes: ", client_id)
 			speakers[client_id]["label"].queue_free()
 			speakers[client_id]["player"].queue_free()
 			speakers.erase(client_id)
@@ -295,7 +348,7 @@ func update_speakers_list():
 				
 	# Update empty speaker visibility after cleanup
 	if speakers_to_remove.size() > 0:
-		check_empty_speaker() 
+		check_empty_speaker()
 
 func _on_client_connected(client_id):
 	print("Voice Chat: Client connected with ID: ", client_id)
@@ -303,3 +356,44 @@ func _on_client_connected(client_id):
 	if has_node("/root/Main/NetworkingNode"):
 		var net_node = get_node("/root/Main/NetworkingNode")
 		net_node.announce_presence() 
+
+func _on_heartbeat_timer_timeout():
+	# Send a heartbeat to keep all connections active
+	if has_node("/root/Main/NetworkingNode"):
+		var net_node = get_node("/root/Main/NetworkingNode")
+		if net_node.clientID != null:
+			net_node.announce_presence()
+	
+	# Also refresh the UI for all speakers
+	for client_id in speakers.keys():
+		# Keep all speakers active
+		speakers[client_id]["last_active"] = Time.get_ticks_msec()
+		update_speaker_ui(client_id, true) 
+
+# Toggle local audio feedback
+func toggle_local_audio():
+	local_audio_enabled = !local_audio_enabled
+	print("Voice Chat: Local audio feedback set to: ", local_audio_enabled)
+	return local_audio_enabled 
+
+func _input(event):
+	# Add keyboard shortcut to toggle local audio feedback with the 'L' key
+	if event is InputEventKey and event.pressed and event.keycode == KEY_L:
+		var is_enabled = toggle_local_audio()
+		# Show temporary visual feedback
+		var feedback_text = "Local audio: " + ("ON" if is_enabled else "OFF")
+		print(feedback_text)
+		show_feedback_message(feedback_text)
+
+func show_feedback_message(text):
+	# Create a temporary label for feedback
+	var feedback = Label.new()
+	feedback.text = text
+	feedback.position = Vector2(20, 140)  # Position below the voice chat panel
+	feedback.modulate = Color(1, 1, 1, 1)
+	add_child(feedback)
+	
+	# Animate fading out
+	var tween = create_tween()
+	tween.tween_property(feedback, "modulate", Color(1, 1, 1, 0), 2.0)
+	tween.tween_callback(feedback.queue_free)

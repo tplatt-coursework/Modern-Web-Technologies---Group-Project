@@ -25,17 +25,36 @@ getUniqueID = function () {
     return s4() + s4() + '-' + s4();
 };
 const clients = {}
+
+// Track disconnected clients for a period of time
+const disconnectedClients = {};
+
 app.ws('/ws',(ws,req)=>{
     
-
-    // console.log("FooBar")
-    // ws.on('connection',ws => {
-    ws.id = getUniqueID();
+    // Check if this is a reconnection of a previously disconnected client
+    let reconnectedClientId = null;
+    for (const [id, info] of Object.entries(disconnectedClients)) {
+        // If the IP address matches, this might be a reconnection
+        if (info.ip === req.ip) {
+            reconnectedClientId = id;
+            console.log(`Possible reconnection from IP ${req.ip}, using previous ID: ${reconnectedClientId}`);
+            delete disconnectedClients[id];
+            break;
+        }
+    }
+    
+    ws.id = reconnectedClientId || getUniqueID();
     while(clients[ws.id] != undefined){
         ws.id = getUniqueID();
     }
-    clients[ws.id]=ws
-    console.log(`Client Connected, id=${ws.id}`)
+    clients[ws.id] = ws;
+    ws.connectionInfo = {
+        ip: req.ip,
+        connectedAt: new Date(),
+        lastActive: new Date()
+    };
+    
+    console.log(`Client Connected, id=${ws.id}, ip=${req.ip}`)
 
     let on_connect = {
         code:200,
@@ -75,12 +94,40 @@ app.ws('/ws',(ws,req)=>{
             console.log(`Cross-announced clients ${ws.id} and ${id}`)
         }
     }
+    
+    // Also tell the new client about recently disconnected clients
+    for(const [id, info] of Object.entries(disconnectedClients)){
+        // Only include recent disconnections (< 5 minutes ago)
+        const disconnectedTime = new Date(info.disconnectedAt);
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+        
+        if (disconnectedTime > fiveMinutesAgo) {
+            let announceDisconnected = {
+                code:201,
+                source:id,
+                response:JSON.stringify({
+                    note:"User Present",
+                    content:id
+                })
+            }
+            ws.send(JSON.stringify(announceDisconnected));
+            console.log(`Informed new client ${ws.id} about recently disconnected client ${id}`);
+        }
+    }
 
     ws.on('message',data=>{
         try{
-            let message = data.toString('utf-8')           
-            let parsedMsg = JSON.parse(message);
-            console.log(`Received message from ${ws.id}:`, parsedMsg.note);
+            let message = data.toString('utf-8')
+            // Update last active timestamp
+            ws.connectionInfo.lastActive = new Date();
+            
+            let parsedMsg;
+            try {
+                parsedMsg = JSON.parse(message);
+                //console.log(`Received message from ${ws.id}:`, parsedMsg.note);
+            } catch (e) {
+                console.error("Failed to parse message:", message);
+            }
 
             for(const [id,socket] of Object.entries(clients)){
                 if(id != ws.id){
@@ -128,7 +175,26 @@ app.ws('/ws',(ws,req)=>{
     })
     
     ws.on('close', () => {
-        console.log('Client disconnected:',ws.id)
+        console.log('Client disconnected:', ws.id)
+        
+        // Don't immediately delete the client - store it as disconnected
+        if (ws.connectionInfo) {
+            disconnectedClients[ws.id] = {
+                ip: ws.connectionInfo.ip,
+                disconnectedAt: new Date(),
+                wasConnectedFor: (new Date() - ws.connectionInfo.connectedAt) / 1000
+            };
+            console.log(`Stored disconnected client ${ws.id} for potential reconnection`);
+            
+            // Schedule cleanup after 5 minutes
+            setTimeout(() => {
+                if (disconnectedClients[ws.id]) {
+                    console.log(`Removing disconnected client ${ws.id} after timeout`);
+                    delete disconnectedClients[ws.id];
+                }
+            }, 5 * 60 * 1000); // 5 minutes
+        }
+        
         delete clients[ws.id]
     })
 

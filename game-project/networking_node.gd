@@ -82,13 +82,25 @@ func announce_presence():
 	# Send an empty voice packet to announce our presence
 	if clientID != null:
 		print("NetworkingNode: Announcing presence with ID:", clientID)
+		
+		# Add a small delay to ensure server connection is ready
+		await get_tree().create_timer(0.5).timeout
+		
 		var payload = {
 			"note":"User Present",
 			"content":clientID
 		}
 		socket.send_text(JSON.stringify(payload))
+		
+		# Send another announcement after a short delay to improve reliability
+		await get_tree().create_timer(1.0).timeout
+		socket.send_text(JSON.stringify(payload))
 	else:
 		print("NetworkingNode: Cannot announce presence - no client ID yet")
+		# Try again after getting client ID
+		await get_tree().create_timer(1.0).timeout
+		if clientID != null:
+			announce_presence()
 
 func parse_packet(packet):
 	print()
