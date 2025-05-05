@@ -44,6 +44,23 @@ app.ws('/ws',(ws,req)=>{
     }
     ws.send(JSON.stringify(on_connect))
 
+    // Announce to all clients that a new user has connected
+    for(const [id,socket] of Object.entries(clients)){
+        if(id != ws.id){
+            let announce = {
+                code:201,
+                source:ws.id,
+                response:JSON.stringify({
+                    note:"User Present",
+                    content:ws.id
+                })
+            }
+
+            let payload = JSON.stringify(announce)
+            socket.send(payload);
+        }
+    }
+
     ws.on('message',data=>{
         try{
             let message = data.toString('utf-8')           
