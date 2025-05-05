@@ -2,5 +2,5 @@ extends Node
 
 var isDriver = false
 var isNavigator = false
-var musicVolume = -20
+var musicVolume = -80
 var showNet = false
