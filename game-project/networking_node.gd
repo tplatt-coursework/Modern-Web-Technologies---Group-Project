@@ -3,9 +3,10 @@ extends Node
 signal NET_CodeBox(x)
 signal NET_Run
 signal NET_VoiceData(data, client_id)
+signal client_connected(client_id)
 
-#const WS_ADDR = "ws://127.0.0.1:3500/ws"
-const WS_ADDR = "wss://tplatt.cs382.net/ws"
+const WS_ADDR = "ws://127.0.0.1:3500/ws"
+#const WS_ADDR = "wss://tplatt.cs382.net/ws"
 var socket = WebSocketPeer.new()
 var clientID = null
 var reconnect_attempts = 3
@@ -77,6 +78,17 @@ func send_voice_data(voice_data):
 	}
 	socket.send_text(JSON.stringify(payload))
 
+func announce_presence():
+	# Send an empty voice packet to announce our presence
+	if clientID != null:
+		print("NetworkingNode: Announcing presence with ID:", clientID)
+		var payload = {
+			"note":"User Present",
+			"content":clientID
+		}
+		socket.send_text(JSON.stringify(payload))
+	else:
+		print("NetworkingNode: Cannot announce presence - no client ID yet")
 
 func parse_packet(packet):
 	print()
@@ -97,6 +109,10 @@ func parse_packet(packet):
 			if source == "ID Assigner":
 				clientID = response
 				print("main/NetworkingNode: Socket ID assigned to "+str(clientID))
+				# Emit signal that client is connected with ID
+				client_connected.emit(clientID)
+				# Announce our presence to other clients
+				announce_presence()
 			else:
 				print("main/NetworkingNode: Response:"+str(response))
 		
@@ -111,6 +127,12 @@ func parse_packet(packet):
 				elif response["note"] == "Voice Data" && response["content"] != null:
 					print("main/NetworkingNode: Voice data received.")
 					NET_VoiceData.emit(response["content"], source)
+				elif response["note"] == "User Present":
+					print("main/NetworkingNode: User present:", source)
+					# Send a response to make sure they see us too
+					announce_presence()
+					# Emit empty voice data to register the user in the voice chat
+					NET_VoiceData.emit("", source)
 				else:print("main/NetworkingNode: Message Not Foratted Properly.")
 			else:print("main/NetworkingNode: Message Not Foratted Properly.")
 		

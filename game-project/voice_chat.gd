@@ -53,12 +53,21 @@ func _ready():
 	if has_node("/root/Main/NetworkingNode"):
 		var net_node = get_node("/root/Main/NetworkingNode")
 		net_node.connect("NET_VoiceData", _on_voice_data_received)
+		# Connect to client ID signal to know when we're connected
+		if net_node.clientID != null:
+			print("Voice Chat: Already connected with ID: ", net_node.clientID)
+			# Announce our presence to the server to make other clients aware
+			net_node.announce_presence()
+		net_node.connect("client_connected", _on_client_connected)
 		print("Voice Chat: Connected to networking node")
 	else:
 		print("Voice Chat: WARNING - NetworkingNode not found!")
 	
 	# Set initial mic icon states - show muted by default
 	update_mic_state(false)
+	
+	# Make sure empty speaker message is visible initially
+	check_empty_speaker()
 
 func _process(delta):
 	if recording:
@@ -197,6 +206,11 @@ func _on_voice_data_received(data_base64, client_id):
 		# Make speaker active in UI
 		update_speaker_ui(client_id, true)
 	
+	# If data is empty, this is just a presence announcement
+	if data_base64.is_empty():
+		print("Voice Chat: Received presence announcement from: ", client_id)
+		return
+	
 	# Convert Base64 back to audio data
 	var data = Marshalls.base64_to_raw(data_base64)
 	
@@ -216,7 +230,7 @@ func add_speaker_to_ui(client_id):
 	# Create speaker icon (use same texture as our mic icon)
 	var speaker_icon = TextureRect.new()
 	speaker_icon.custom_minimum_size = Vector2(16, 16)
-	speaker_icon.expand_mode = TextureRect.EXPAND_KEEP_ASPECT
+	speaker_icon.expand_mode = TextureRect.EXPAND_KEEP_SIZE
 	speaker_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	
 	# Use the mic icon texture
@@ -282,3 +296,10 @@ func update_speakers_list():
 	# Update empty speaker visibility after cleanup
 	if speakers_to_remove.size() > 0:
 		check_empty_speaker() 
+
+func _on_client_connected(client_id):
+	print("Voice Chat: Client connected with ID: ", client_id)
+	# If this is our first connection, announce our presence
+	if has_node("/root/Main/NetworkingNode"):
+		var net_node = get_node("/root/Main/NetworkingNode")
+		net_node.announce_presence() 
